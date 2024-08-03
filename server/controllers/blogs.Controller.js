@@ -22,3 +22,29 @@ export const allBlogs = async (req, res, next) => {
     return next(errorHandler(500, error.message));
   }
 };
+
+export const createBlog = async (req, res, next) => {
+  const { userId } = req.user.userId;
+  const { title, body, category } = req.body;
+
+  if (!title || !body || !category) {
+    return next(errorHandler(400, "All fields are required"));
+  }
+
+  try {
+    const newBlog = new Blog({
+      title,
+      body,
+      category,
+      user: userId,
+    });
+
+    await newBlog.save();
+
+    if (!newBlog) return next(errorHandler(400, "Blog not created"));
+
+    res.status(201).json(newBlog);
+  } catch (error) {
+    return next(errorHandler(500, error.message));
+  }
+};
