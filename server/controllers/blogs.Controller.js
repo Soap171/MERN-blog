@@ -48,3 +48,25 @@ export const createBlog = async (req, res, next) => {
     return next(errorHandler(500, error.message));
   }
 };
+
+export const deleteBlog = async (req, res, next) => {
+  const { id } = req.params;
+  const { userId } = req.user;
+
+  if (!id) return next(errorHandler(400, "Blog ID is required"));
+
+  try {
+    const blog = await Blog.findById(id);
+
+    if (!blog) return next(errorHandler(404, "Blog not found"));
+
+    const deletedBlog = await Blog.findByIdAndDelete(id);
+
+    if (!deletedBlog)
+      return next(errorHandler(500, "Failed to delete the blog"));
+
+    res.status(200).json({ message: "Blog deleted successfully" });
+  } catch (error) {
+    return next(errorHandler(500, error.message));
+  }
+};
