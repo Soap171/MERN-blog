@@ -1,6 +1,7 @@
 import express from "express";
-import { verifyToken } from "../utils/verifyToken";
-import { allBlogs } from "../controllers/blogs.Controller";
+import { allBlogs } from "../controllers/blogs.Controller.js";
 const router = express.Router();
 
-router.get("/", verifyToken, allBlogs);
+router.get("/", allBlogs);
+
+export default router;
