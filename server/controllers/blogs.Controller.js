@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Blog from "../models/blog.js";
+import Comment from "../models/comments.js";
 import { errorHandler } from "../utils/error.js";
 
 // view all blogs
@@ -10,11 +11,11 @@ export const allBlogs = async (req, res, next) => {
     let blogs;
 
     if (category) {
-      blogs = await Blog.find({ category });
+      blogs = await Blog.find({ category }).populate("comments");
       if (!blogs.length)
         return next(errorHandler(404, "No blogs found for this category"));
     } else {
-      blogs = await Blog.find();
+      blogs = await Blog.find().populate("comments");
       if (!blogs.length) return next(errorHandler(404, "No blogs found"));
     }
 
@@ -96,5 +97,42 @@ export const updateBlog = async (req, res, next) => {
     res.status(200).json(updatedBlog);
   } catch (error) {
     return next(errorHandler(500, error.message));
+  }
+};
+
+// create a comment for a blog
+export const createComment = async (req, res, next) => {
+  const userId = req.userId;
+  const { commentData } = req.body;
+  const { id } = req.params;
+  console.log(userId);
+  console.log(id);
+  console.log(commentData);
+
+  if (!id || !userId) {
+    return next(errorHandler(404, "Blog ID or user ID not found"));
+  }
+
+  if (!commentData) return next(errorHandler(400, "Comment is required"));
+
+  try {
+    const newComment = new Comment({
+      comment: commentData,
+      user: userId,
+      blog: id,
+    });
+
+    await newComment.save();
+    // Add the comment to the blog's comments array
+    await Blog.findByIdAndUpdate(id, {
+      $push: { comments: newComment._id },
+    });
+
+    if (!newComment) return next(errorHandler(400, "Comment not created"));
+
+    res.status(201).json(newComment);
+  } catch (error) {
+    return next(errorHandler(500, error.message));
+    console.log(error.message);
   }
 };
