@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Blog from "../models/blog.js";
 import { errorHandler } from "../utils/error.js";
 
+// view all blogs
 export const allBlogs = async (req, res, next) => {
   const { category } = req.query;
 
@@ -23,8 +24,9 @@ export const allBlogs = async (req, res, next) => {
   }
 };
 
+// create a new blogs
 export const createBlog = async (req, res, next) => {
-  const { userId } = req.user.userId;
+  const { userId } = req.userId;
   const { title, body, category } = req.body;
 
   if (!title || !body || !category) {
@@ -49,9 +51,10 @@ export const createBlog = async (req, res, next) => {
   }
 };
 
+// delete a blog
 export const deleteBlog = async (req, res, next) => {
   const { id } = req.params;
-  const { userId } = req.user;
+  const { userId } = req.userId;
 
   if (!id) return next(errorHandler(400, "Blog ID is required"));
 
@@ -66,6 +69,31 @@ export const deleteBlog = async (req, res, next) => {
       return next(errorHandler(500, "Failed to delete the blog"));
 
     res.status(200).json({ message: "Blog deleted successfully" });
+  } catch (error) {
+    return next(errorHandler(500, error.message));
+  }
+};
+
+//update blog
+
+export const updateBlog = async (req, res, next) => {
+  const { id } = req.params;
+
+  if (!id) return next(errorHandler(400, "Blog ID is required"));
+
+  try {
+    const blog = await Blog.findById(id);
+    if (!blog) return next(errorHandler(404, "Blog not found"));
+
+    const updatedBlog = await Blog.findOneAndUpdate(
+      { _id: blog._id },
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+    if (!updateBlog)
+      return next(errorHandler(500, "Failed to update the blog"));
+
+    res.status(200).json(updatedBlog);
   } catch (error) {
     return next(errorHandler(500, error.message));
   }
