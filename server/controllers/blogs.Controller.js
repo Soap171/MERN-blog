@@ -63,7 +63,11 @@ export const deleteBlog = async (req, res, next) => {
     const blog = await Blog.findById(id);
 
     if (!blog) return next(errorHandler(404, "Blog not found"));
-
+    if (blog.user !== userId) {
+      return next(
+        errorHandler(403, "You are not authorized to delete this blog")
+      );
+    }
     const deletedBlog = await Blog.findByIdAndDelete(id);
 
     if (!deletedBlog)
@@ -79,12 +83,19 @@ export const deleteBlog = async (req, res, next) => {
 
 export const updateBlog = async (req, res, next) => {
   const { id } = req.params;
+  const { userId } = req.userId;
 
   if (!id) return next(errorHandler(400, "Blog ID is required"));
 
   try {
     const blog = await Blog.findById(id);
     if (!blog) return next(errorHandler(404, "Blog not found"));
+
+    if (blog.user !== userId) {
+      return next(
+        errorHandler(403, "You are not authorized to update this blog")
+      );
+    }
 
     const updatedBlog = await Blog.findOneAndUpdate(
       { _id: blog._id },
@@ -133,6 +144,5 @@ export const createComment = async (req, res, next) => {
     res.status(201).json(newComment);
   } catch (error) {
     return next(errorHandler(500, error.message));
-    console.log(error.message);
   }
 };
