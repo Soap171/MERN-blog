@@ -5,6 +5,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
+import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
+import { createVerifyToken } from "../utils/createVerifyToken.js";
+import { sendVerificationEmail } from "../mailtrap/email.js";
 
 export const signIn = async (req, res, next) => {
   const { username, password } = req.body;
@@ -39,54 +42,41 @@ export const signIn = async (req, res, next) => {
       .json(user);
   } catch (error) {
     next(errorHandler(error));
+    console.log(error);
   }
 };
 
 export const signUp = async (req, res, next) => {
-  const { username, email, password } = req.body;
-
-  if (!username || !email || !password) {
-    return next(errorHandler(400, "All fields are required"));
-  }
-
+  const { email, password, name } = req.body;
   try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return next(errorHandler(400, "User already exists"));
-    }
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    if (!email || !password || !name)
+      return next(errorHandler(400, "All fields are required"));
 
-    const newUser = new User({
-      username,
+    const existingUser = await User.findOne({ email });
+    if (existingUser) return next(errorHandler(400, "User already exists"));
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const Token = createVerifyToken();
+    const user = new User({
       email,
       password: hashedPassword,
+      name,
+      verificationToken: Token,
+      verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
     });
 
-    await newUser.save();
+    await user.save();
+    generateTokenAndSetCookie(res, user._id);
+    sendVerificationEmail(user.email, user.verificationToken);
+    const { password: userPassword, ...userWithoutPassword } = user._doc;
 
-    if (!newUser) {
-      return next(errorHandler(401, "User not created"));
-    }
-
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, {
-      expiresIn: "5h",
+    res.status(201).json({
+      success: true,
+      message: "user created successfully",
+      user: userWithoutPassword,
     });
-
-    const { password: pass, ...rest } = newUser._doc;
-
-    res
-      .status(200)
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        secure: true,
-        sameSite: "none",
-        maxAge: 3600000 * 5,
-      })
-      .json(rest);
   } catch (error) {
-    next(errorHandler(error));
+    return next(error);
   }
 };
 
