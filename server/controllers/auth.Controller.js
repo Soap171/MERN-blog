@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import { createVerifyToken } from "../utils/createVerifyToken.js";
-import { sendVerificationEmail } from "../mailtrap/email.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/email.js";
 
 export const signIn = async (req, res, next) => {
   const { username, password } = req.body;
@@ -67,7 +67,7 @@ export const signUp = async (req, res, next) => {
 
     await user.save();
     generateTokenAndSetCookie(res, user._id);
-    sendVerificationEmail(user.email, user.verificationToken);
+    sendVerificationEmail(user.email, user.verificationToken, next);
     const { password: userPassword, ...userWithoutPassword } = user._doc;
 
     res.status(201).json({
@@ -83,6 +83,37 @@ export const signUp = async (req, res, next) => {
 export const signOut = async (req, res, next) => {
   try {
     res.clearCookie("token").json({ message: "Sign out successfully" });
+  } catch (error) {
+    next(errorHandler(error));
+  }
+};
+
+export const verifyEmail = async (req, res, next) => {
+  const { code } = req.body;
+
+  if (!code) return next(errorHandler(400, "Verification code is required"));
+  try {
+    const user = await User.findOne({
+      verificationToken: code,
+      verificationTokenExpiresAt: { $gt: Date.now() },
+    });
+
+    if (!user) return next(errorHandler(400, "Invalid or expired token"));
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiresAt = undefined;
+    await user.save();
+
+    await sendWelcomeEmail(user.email, user.name, next);
+    res.status(200).json({
+      success: true,
+      message: "Email verified successfully",
+      user: {
+        ...user._doc,
+        password: undefined,
+      },
+    });
   } catch (error) {
     next(errorHandler(error));
   }
