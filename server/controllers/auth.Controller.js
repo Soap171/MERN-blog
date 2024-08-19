@@ -39,7 +39,7 @@ export const signIn = async (req, res, next) => {
         secure: true,
         sameSite: "none",
       })
-      .json(user);
+      .json(rest);
   } catch (error) {
     next(errorHandler(error));
     console.log(error);
@@ -68,7 +68,6 @@ export const signUp = async (req, res, next) => {
     await user.save();
     generateTokenAndSetCookie(res, user._id);
     sendVerificationEmail(user.email, user.verificationToken, next);
-    const { password: userPassword, ...userWithoutPassword } = user._doc;
 
     res.status(201).json({
       success: true,
@@ -77,6 +76,7 @@ export const signUp = async (req, res, next) => {
     });
   } catch (error) {
     return next(error);
+    console.log(error);
   }
 };
 
@@ -85,6 +85,7 @@ export const signOut = async (req, res, next) => {
     res.clearCookie("token").json({ message: "Sign out successfully" });
   } catch (error) {
     next(errorHandler(error));
+    console.log(error);
   }
 };
 
@@ -104,17 +105,18 @@ export const verifyEmail = async (req, res, next) => {
     user.verificationToken = undefined;
     user.verificationTokenExpiresAt = undefined;
     await user.save();
+    const { password: pass, ...rest } = user._doc;
 
     await sendWelcomeEmail(user.email, user.name, next);
-    res.status(200).json({
-      success: true,
-      message: "Email verified successfully",
-      user: {
-        ...user._doc,
-        password: undefined,
+    res.status(200).json(
+      {
+        success: true,
+        message: "Email verified successfully",
       },
-    });
+      rest
+    );
   } catch (error) {
     next(errorHandler(error));
+    console.log(error);
   }
 };
