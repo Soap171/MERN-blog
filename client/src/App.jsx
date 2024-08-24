@@ -1,7 +1,21 @@
+import { Routes, Route } from "react-router-dom";
+import Login from "./pages/login";
+import SignUp from "./pages/signUp";
+import forgetPassword from "./pages/forgetPassword";
+import verifyEmail from "./pages/verifyEmail";
+import resetPassword from "./pages/resetPassword";
+import Home from "./pages/Home";
 function App() {
   return (
     <>
-      <h1 className="text-red-500 text-5xl">Hello World</h1>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/forget-password" element={<forgetPassword />} />
+        <Route path="/verify-email" element={<verifyEmail />} />
+        <Route path="/reset-password" element={<resetPassword />} />
+      </Routes>
     </>
   );
 }
