@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Login from "./pages/login";
 import SignUp from "./pages/signUp";
 import forgetPassword from "./pages/forgetPassword";
-import verifyEmail from "./pages/verifyEmail";
+import VerifyEmail from "./pages/verifyEmail";
 import resetPassword from "./pages/resetPassword";
 import Home from "./pages/Home";
 function App() {
@@ -13,7 +13,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/forget-password" element={<forgetPassword />} />
-        <Route path="/verify-email" element={<verifyEmail />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/reset-password" element={<resetPassword />} />
       </Routes>
     </>
