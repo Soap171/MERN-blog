@@ -1,6 +1,6 @@
 # Blog REST API
 
-This is a REST API for a blog application built using the MERN stack (MongoDB, Express.js, React.js, Node.js). The API provides comprehensive endpoints for managing blog posts and user interactions, including user authentication, email verification, and password reset functionality.
+This is a REST API for a blog application built using (MongoDB, Express.js, React.js, Node.js). The API provides comprehensive endpoints for managing blog posts and user interactions, including user authentication, email verification, and password reset functionality.
 
 ## Features
 
