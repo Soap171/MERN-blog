@@ -6,7 +6,7 @@ function Header() {
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
-        <Link className="navbar-brand" to="#">
+        <Link className="navbar-brand" to="/">
           <img src={LogoImg} alt="" height={45} />
         </Link>
         <button
@@ -28,7 +28,7 @@ function Header() {
               </Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/">
+              <Link className="nav-link" to="/blog">
                 Write
               </Link>
             </li>
