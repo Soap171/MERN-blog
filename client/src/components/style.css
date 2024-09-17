@@ -1,0 +1,29 @@
+.icon-hover:hover {
+  color: #007bff; /* Change the color on hover */
+  cursor: pointer; /* Change the cursor to pointer */
+}
+
+/*Single Blog Page  */
+.blog-container {
+  background-color: #f8f9fa; /* Light background color */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.blog-title {
+  font-size: 2.5rem; /* Larger font size */
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.blog-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.blog-content {
+  font-size: 1.2rem; /* Slightly larger font size */
+  line-height: 1.6;
+}

@@ -1,7 +1,11 @@
 import React from "react";
-
+import BlogList from "../components/BlogList";
 function Home() {
-  return <div>Home</div>;
+  return (
+    <>
+      <BlogList />
+    </>
+  );
 }
 
 export default Home;
