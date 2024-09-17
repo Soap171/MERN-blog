@@ -13,6 +13,7 @@ import ForgetPassword from "./pages/ForgetPassword";
 import PasswordReset from "./pages/PasswordReset";
 import Header from "./components/Header";
 import Write from "./pages/Write";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/password-reset" element={<PasswordReset />} />
         <Route path="/blog" element={<Write />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </div>
   );

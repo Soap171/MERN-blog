@@ -27,3 +27,38 @@
   font-size: 1.2rem; /* Slightly larger font size */
   line-height: 1.6;
 }
+
+/*Profile page  */
+
+.profile-container {
+  background-color: #f8f9fa; /* Light background color */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.profile-picture {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.profile-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.profile-bio {
+  font-size: 1rem;
+  color: #6c757d; /* Bootstrap's text-muted color */
+}
+
+.profile-details h4 {
+  font-size: 1.25rem;
+  margin-bottom: 15px;
+}
+
+.profile-details ul {
+  font-size: 1rem;
+  line-height: 1.6;
+}

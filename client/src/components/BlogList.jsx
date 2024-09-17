@@ -24,6 +24,25 @@ const blogs = [
     description: "This is a short description of blog post 3.",
     image: "https://via.placeholder.com/150",
   },
+
+  {
+    id: 1,
+    title: "Blog Post 4",
+    description: "This is a short description of blog post 1.",
+    image: "https://via.placeholder.com/150",
+  },
+  {
+    id: 2,
+    title: "Blog Post 5",
+    description: "This is a short description of blog post 2.",
+    image: "https://via.placeholder.com/150",
+  },
+  {
+    id: 3,
+    title: "Blog Post 6",
+    description: "This is a short description of blog post 3.",
+    image: "https://via.placeholder.com/150",
+  },
   // Add more blog posts as needed
 ];
 
