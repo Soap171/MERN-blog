@@ -11,16 +11,24 @@ import {
 } from "mdb-react-ui-kit";
 import LogoImg from "../images/Logo.png";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
 
 function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { isLoading, error, signUp } = useAuthStore();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Submit the form
-    console.log(name, email, password);
+    try {
+      await signUp(name, email, password);
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -84,10 +92,16 @@ function Signup() {
               <Link to="/login">Already a member?</Link>
             </div>
 
-            <MDBBtn className="mb-4 w-100" size="lg" type="submit">
-              Sign Up
+            <MDBBtn
+              className="mb-4 w-100"
+              size="lg"
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? "Loading..." : "Sign Up"}
             </MDBBtn>
           </MDBValidation>
+          {error && <p className="text-danger text-center">{error}</p>}
 
           <div className="divider d-flex align-items-center my-4">
             <p className="text-center fw-bold mx-3 mb-0">OR</p>
