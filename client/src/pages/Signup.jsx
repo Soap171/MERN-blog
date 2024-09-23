@@ -25,7 +25,7 @@ function Signup() {
     e.preventDefault();
     try {
       await signUp(name, email, password);
-      navigate("/");
+      navigate("/verify-email");
     } catch (error) {
       console.error(error);
     }

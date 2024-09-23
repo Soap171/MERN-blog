@@ -84,8 +84,7 @@ export const signUp = async (req, res, next) => {
       user: rest,
     });
   } catch (error) {
-    return next(error);
-    console.log(error);
+    return next(errorHandler(error));
   }
 };
 

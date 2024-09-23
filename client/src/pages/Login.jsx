@@ -12,14 +12,25 @@ import {
 import LogoImg from "../images/Logo.png";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { useAuthStore } from "../store/authStore";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { isLoading, error, login } = useAuthStore();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(email, password);
+    try {
+      await login(email, password);
+      navigate("/");
+      toast.success("Logged in successfully");
+    } catch (error) {
+      console.log(error.message);
+      toast.error(error.message);
+    }
   };
   return (
     <MDBContainer fluid className="p-3 my-5 p-5">
@@ -68,9 +79,12 @@ function Login() {
               <Link to="/forget-password">Forgot password?</Link>
             </div>
 
-            <MDBBtn className="mb-4 w-100" size="lg">
-              Sign in
+            <MDBBtn className="mb-4 w-100" size="lg" disabled={isLoading}>
+              {isLoading ? "Logging in..." : "Login"}
             </MDBBtn>
+            {error && (
+              <div className="alert alert-danger mt-3 text-center">{error}</div>
+            )}
           </MDBValidation>
 
           <div className="divider d-flex align-items-center my-4">

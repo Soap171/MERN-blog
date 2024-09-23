@@ -1,8 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import LogoImg from "../images/Logo.png";
+import { useAuthStore } from "../store/authStore";
 
 function Header() {
+  const { isLoading, error, logout } = useAuthStore();
+
+  const handleSubmit = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
@@ -102,7 +113,7 @@ function Header() {
                   <Link
                     className="dropdown-item text-danger"
                     role="button"
-                    onClick={""}
+                    onClick={handleSubmit}
                   >
                     Logout
                   </Link>
