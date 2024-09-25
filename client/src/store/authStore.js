@@ -1,8 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
-import Login from "../pages/Login";
 
-const API_URL = "http://localhost:8000/api/auth";
+export const API_URL = "http://localhost:8000/api/auth";
 axios.defaults.withCredentials = true;
 export const useAuthStore = create((set) => ({
   user: null,
@@ -105,5 +104,32 @@ export const useAuthStore = create((set) => ({
         isAuthenticated: false,
       });
     }
+  },
+
+  googleAuth: async (name, email, profileUrl) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await axios.post(`${API_URL}/google-auth`, {
+        name,
+        email,
+        googlePhotoUrl: profileUrl,
+      });
+      set({
+        isAuthenticated: true,
+        user: response.data.user,
+        error: null,
+        isLoading: false,
+      });
+    } catch (error) {
+      set({
+        isLoading: false,
+        error: error.message || "Error Logging in",
+      });
+      throw error;
+    }
+  },
+
+  updateUser: (userData) => {
+    set({ user: userData });
   },
 }));

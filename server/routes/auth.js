@@ -7,6 +7,8 @@ import {
   forgetPassword,
   resetPassword,
   checkAuth,
+  updateProfile,
+  google,
 } from "../controllers/auth.Controller.js";
 import { verifyToken } from "../utils/verifyToken.js";
 
@@ -19,4 +21,6 @@ router.post("/sign-out", signOut);
 router.post("/verify-email", verifyEmail);
 router.post("/forgot-password", forgetPassword);
 router.post("/reset-password/:token", resetPassword);
+router.patch("/update", verifyToken, updateProfile);
+router.post("/google-auth", google);
 export default router;

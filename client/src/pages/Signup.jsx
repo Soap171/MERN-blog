@@ -13,6 +13,7 @@ import LogoImg from "../images/Logo.png";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import OAuth from "../components/OAuth";
 
 function Signup() {
   const [name, setName] = useState("");
@@ -116,14 +117,7 @@ function Signup() {
             Continue with Facebook
           </MDBBtn>
 
-          <MDBBtn
-            className="mb-4 w-100"
-            size="lg"
-            style={{ backgroundColor: "#DB4437" }}
-          >
-            <MDBIcon fab icon="google" className="mx-2" />
-            Continue with Google
-          </MDBBtn>
+          <OAuth />
         </MDBCol>
       </MDBRow>
     </MDBContainer>

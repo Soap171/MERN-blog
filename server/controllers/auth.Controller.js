@@ -204,3 +204,77 @@ export const checkAuth = async (req, res, next) => {
     return next(errorHandler(error));
   }
 };
+
+export const updateProfile = async (req, res, next) => {
+  const { name, bio, location, phone, profilePicture, email } = req.body;
+
+  if (!name && !bio && !location && !phone && !profilePicture && !email)
+    return next(errorHandler(400, "At least one field is required"));
+
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) return next(errorHandler(404, "User not found"));
+
+    const updatedFields = {};
+    if (name) updatedFields.name = name;
+    if (bio) updatedFields.bio = bio;
+    if (location) updatedFields.location = location;
+    if (phone) updatedFields.phone = phone;
+    if (profilePicture) updatedFields.profilePicture = profilePicture;
+    if (email) updatedFields.email = email;
+
+    await user.updateOne(updatedFields);
+
+    return res
+      .status(200)
+      .json({ success: true, user: { ...user._doc, ...updatedFields } });
+  } catch (error) {
+    next(errorHandler(error));
+    console.log(error);
+  }
+};
+
+export const google = async (req, res, next) => {
+  const { name, email, googlePhotoUrl } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (user) {
+      generateTokenAndSetCookie(res, user._id);
+      const { password, ...rest } = user._doc;
+
+      res.status(201).json({
+        success: true,
+        user: rest,
+      });
+    } else {
+      const randomPassword = Math.random().toString(36).slice(-8);
+
+      const hashedPassowrd = bcrypt.hashSync(randomPassword, 10);
+
+      const newUser = new User({
+        name:
+          name.toLowerCase().split(" ").join("") +
+          Math.random().toString(9).slice(-4),
+        email,
+        password: hashedPassowrd,
+        profilePicture: googlePhotoUrl,
+        isVerified: true,
+      });
+
+      await newUser.save();
+
+      generateTokenAndSetCookie(res, newUser._id);
+      const { password, ...rest } = newUser._doc;
+
+      res.status(201).json({
+        success: true,
+        message: "user created successfully",
+        user: rest,
+      });
+    }
+  } catch (error) {
+    return next(errorHandler(error));
+  }
+};

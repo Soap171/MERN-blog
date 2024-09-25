@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import OAuth from "../components/OAuth";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -100,14 +101,7 @@ function Login() {
             Continue with facebook
           </MDBBtn>
 
-          <MDBBtn
-            className="mb-4 w-100"
-            size="lg"
-            style={{ backgroundColor: "#DB4437" }}
-          >
-            <MDBIcon fab icon="google" className="mx-2" />
-            Continue with google
-          </MDBBtn>
+          <OAuth />
         </MDBCol>
       </MDBRow>
     </MDBContainer>

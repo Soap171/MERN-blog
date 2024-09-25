@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 
 function VerifyEmail() {
   const [code, setCode] = useState(new Array(6).fill(""));
-  const { isLoading, error, verifyEmail } = useAuthStore();
+  const { isLoading, error, verifyEmail, checkAuth } = useAuthStore();
   const navigate = useNavigate();
 
   const handleChange = (element, index) => {
@@ -25,6 +25,7 @@ function VerifyEmail() {
     e.preventDefault();
     try {
       await verifyEmail(code.join(""));
+      await checkAuth();
       navigate("/");
       toast.success("Email Verified Successfully");
     } catch (error) {

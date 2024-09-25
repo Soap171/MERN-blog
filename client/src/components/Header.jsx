@@ -2,9 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import LogoImg from "../images/Logo.png";
 import { useAuthStore } from "../store/authStore";
+import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 
 function Header() {
-  const { isLoading, error, logout } = useAuthStore();
+  const { isLoading, error, logout, user } = useAuthStore();
+  const userName = user ? capitalizeFirstLetter(user.name) : "";
 
   const handleSubmit = async () => {
     try {
@@ -38,11 +40,14 @@ function Header() {
                 Home
               </Link>
             </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/blog">
-                Write
-              </Link>
-            </li>
+            {user && (
+              <li className="nav-item">
+                <Link className="nav-link" to="/blog">
+                  Write
+                </Link>
+              </li>
+            )}
+
             <li className="nav-item dropdown">
               <a
                 className="nav-link dropdown-toggle"
@@ -81,6 +86,16 @@ function Header() {
                 </li>
               </ul>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/contact">
+                Contact
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/about">
+                About
+              </Link>
+            </li>
           </ul>
           <form className="d-flex" role="search">
             <input
@@ -93,34 +108,43 @@ function Header() {
               Search
             </button>
           </form>
-          <ul className="navbar-nav p-2">
-            <li className="nav-item dropdown">
-              <a
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                className="nav-link dropdown-toggle"
-              >
-                Username
-              </a>
-              <ul className="dropdown-menu p-2">
-                <li>
-                  <Link className="dropdown-item" to="/profile">
-                    Profile
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="dropdown-item text-danger"
-                    role="button"
-                    onClick={handleSubmit}
-                  >
-                    Logout
-                  </Link>
-                </li>
-              </ul>
-            </li>
-          </ul>
+          {user == null ? (
+            <Link className="d-flex btn btn-primary mx-2" to="/login">
+              Login
+            </Link>
+          ) : (
+            ""
+          )}
+          {user && (
+            <ul className="navbar-nav p-2">
+              <li className="nav-item dropdown">
+                <a
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  className="nav-link dropdown-toggle"
+                >
+                  Hello, {userName}
+                </a>
+                <ul className="dropdown-menu p-2">
+                  <li>
+                    <Link className="dropdown-item" to="/profile">
+                      Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      className="dropdown-item text-danger"
+                      role="button"
+                      onClick={handleSubmit}
+                    >
+                      Logout
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          )}
         </div>
       </div>
     </nav>
