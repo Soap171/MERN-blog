@@ -65,13 +65,16 @@ function Profile() {
     if (imageFile) {
       try {
         // Delete the previous image if it exists
-        if (user.profilePicture) {
+        if (
+          user.profilePicture &&
+          user.profilePicture.includes("firebasestorage.googleapis.com")
+        ) {
           await deleteImage(user.profilePicture);
         }
         const imageUrl = await uploadImage(imageFile);
         updatedProfileData.profilePicture = imageUrl;
       } catch (error) {
-        console.error("Error uploading image:", error);
+        console.error("Error uploading image:", error.message);
         toast.error("Error uploading image");
         return;
       }
