@@ -7,14 +7,21 @@ import {
   MDBBtn,
   MDBInput,
 } from "mdb-react-ui-kit";
+import { useAuthStore } from "../store/authStore";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { useParams } from "react-router-dom";
 
 function PasswordReset() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
+  const { error: resetError, passwordReset } = useAuthStore();
+  const { token } = useParams();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let validPassword = true;
     let validConfirmPassword = true;
@@ -46,7 +53,15 @@ function PasswordReset() {
     }
 
     if (validPassword && validConfirmPassword) {
-      console.log("Password reset successfully");
+      try {
+        const res = await passwordReset(token, password);
+        console.log(res.data);
+        toast.success("Password reset successfully");
+        setTimeout(() => navigate("/login"), 2000);
+      } catch (error) {
+        toast.error(resetError);
+        console.log(resetError);
+      }
     }
   };
 

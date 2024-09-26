@@ -8,13 +8,23 @@ import {
   MDBInput,
 } from "mdb-react-ui-kit";
 import { useState } from "react";
+import { useAuthStore } from "../store/authStore";
+import toast from "react-hot-toast";
 
 function ForgetPassword() {
   const [email, setEmail] = useState("");
+  const { error, passwordForget } = useAuthStore();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(email);
+    try {
+      const res = await passwordForget(email);
+      console.log(res.message);
+      toast.success(res.message);
+    } catch (error) {
+      console.log(error.message);
+      toast.error(error.message);
+    }
   };
   return (
     <MDBContainer
