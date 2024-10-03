@@ -8,7 +8,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import Loader from "../utils/Loader";
 import "./style.css";
 
-function BlogList() {
+function BlogList({ excludeBlogId }) {
   const queryClient = useQueryClient();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -43,14 +43,16 @@ function BlogList() {
 
     return <div>Error: {error.message}</div>;
   }
+  // Filter out the blog with the same ID as excludeBlogId
+  const filteredBlogs = blogs.filter((blog) => blog._id !== excludeBlogId);
 
   // Calculate the blogs to be displayed on the current page
   const indexOfLastBlog = currentPage * blogsPerPage;
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-  const currentBlogs = blogs.slice(indexOfFirstBlog, indexOfLastBlog);
+  const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
 
   // Calculate the total number of pages
-  const totalPages = Math.ceil(blogs.length / blogsPerPage);
+  const totalPages = Math.ceil(filteredBlogs.length / blogsPerPage);
 
   const handleClick = (pageNumber) => {
     setCurrentPage(pageNumber);

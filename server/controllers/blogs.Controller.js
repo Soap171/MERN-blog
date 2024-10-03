@@ -25,6 +25,20 @@ export const allBlogs = async (req, res, next) => {
   }
 };
 
+export const getBlog = async (req, res, next) => {
+  const { id } = req.params;
+
+  if (!id) return next(errorHandler(400, "Blog ID is required"));
+
+  try {
+    const blog = await Blog.findById(id).populate("comments");
+    if (!blog) return next(errorHandler(404, "Blog not found"));
+
+    res.status(200).json(blog);
+  } catch (error) {
+    return next(errorHandler(500, error.message));
+  }
+};
 // create a new blogs
 export const createBlog = async (req, res, next) => {
   const { userId } = req.userId;

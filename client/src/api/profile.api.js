@@ -32,3 +32,12 @@ export const fetchBlogs = async (category) => {
   });
   return response.data;
 };
+
+export const fetchBlog = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL_BLOG}/api/blogs/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

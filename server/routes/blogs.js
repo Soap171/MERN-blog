@@ -5,6 +5,7 @@ import {
   deleteBlog,
   updateBlog,
   createComment,
+  getBlog,
 } from "../controllers/blogs.Controller.js";
 import { verifyToken } from "../utils/verifyToken.js";
 
@@ -12,6 +13,7 @@ const router = express.Router();
 
 // POST CRUD routes
 router.get("/", allBlogs);
+router.get("/:id", getBlog);
 router.post("/", verifyToken, createBlog);
 router.delete("/:id", verifyToken, deleteBlog);
 router.patch("/:id", verifyToken, updateBlog);

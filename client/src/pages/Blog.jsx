@@ -4,15 +4,30 @@ import "../components/style.css"; // Import custom CSS
 import BlogList from "../components/BlogList";
 import { AiOutlineDelete } from "react-icons/ai";
 import { AiFillEdit } from "react-icons/ai";
+import { useParams } from "react-router-dom";
+import { fetchBlog } from "../api/profile.api";
+import { useQuery } from "@tanstack/react-query";
+import Loader from "../utils/Loader";
 
 function Blog() {
-  const blog = {
-    id: 1,
-    title: "Blog Post 1",
-    description: "This is a short description of blog post 1.",
-    content: "Full content of blog post 1.",
-    image: "https://via.placeholder.com/150",
-  };
+  const { id } = useParams();
+  const {
+    data: blog,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["blog", id],
+    queryFn: () => fetchBlog(id),
+  });
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+    console.log(error);
+  }
 
   return (
     <>
@@ -24,6 +39,7 @@ function Blog() {
               <AiOutlineDelete size={20} className="icon-hover" />
             </div>
             <h2 className="blog-title">{blog.title}</h2>
+            <h6 className="text-muted">{blog.category}</h6>
           </div>
 
           <div className="col-12">
@@ -34,11 +50,11 @@ function Blog() {
             />
           </div>
           <div className="col-12">
-            <p className="blog-content">{blog.content}</p>
+            <p className="blog-content">{blog.body}</p>
           </div>
         </div>
       </div>
-      <BlogList />
+      <BlogList excludeBlogId={id} />
     </>
   );
 }
