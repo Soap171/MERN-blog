@@ -19,6 +19,10 @@ const blogSchema = new mongoose.Schema(
       required: true,
       enum: ["Technology", "Health", "Lifestyle", "Education", "Finance"],
     },
+    imageUrl: {
+      type: String,
+      required: true,
+    },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

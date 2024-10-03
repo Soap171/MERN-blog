@@ -23,6 +23,7 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig);
 export const imageDb = getStorage(app);
 
+// profile image
 export const uploadImage = async (file) => {
   const storageRef = ref(imageDb, `images/${file.name}`);
   await uploadBytes(storageRef, file);
@@ -31,6 +32,19 @@ export const uploadImage = async (file) => {
 };
 
 export const deleteImage = async (imageUrl) => {
+  const storageRef = ref(imageDb, imageUrl);
+  await deleteObject(storageRef);
+};
+
+// blog image
+export const uploadBlogImage = async (file) => {
+  const storageRef = ref(imageDb, `blogImages/${file.name}`);
+  await uploadBytes(storageRef, file);
+  const downloadURL = await getDownloadURL(storageRef);
+  return downloadURL;
+};
+
+export const deleteBlogImage = async (imageUrl) => {
   const storageRef = ref(imageDb, imageUrl);
   await deleteObject(storageRef);
 };

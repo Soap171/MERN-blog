@@ -60,27 +60,27 @@ function Header() {
               </a>
               <ul className="dropdown-menu">
                 <li>
-                  <Link className="dropdown-item" to="category=technology">
+                  <Link className="dropdown-item" to="category=Technology">
                     Technology
                   </Link>
                 </li>
                 <li>
-                  <Link className="dropdown-item" to="category=health">
+                  <Link className="dropdown-item" to="?category=Health">
                     Health
                   </Link>
                 </li>
                 <li>
-                  <Link className="dropdown-item" to="category=lifestyle">
+                  <Link className="dropdown-item" to="?category=Lifestyle">
                     Lifestyle
                   </Link>
                 </li>
                 <li>
-                  <Link className="dropdown-item" to="category=education">
+                  <Link className="dropdown-item" to="?category=Education">
                     Education
                   </Link>
                 </li>
                 <li>
-                  <Link className="dropdown-item" to="category=finance">
+                  <Link className="dropdown-item" to="?category=Finance">
                     Finance
                   </Link>
                 </li>

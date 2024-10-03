@@ -2,12 +2,17 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { uploadBlogImage, deleteBlogImage } from "../services/firebase";
+import { writeBlog } from "../api/profile.api";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 function Write() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
   const [category, setCategory] = useState("");
+  const [isUpdate, setIsUpdate] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
@@ -15,11 +20,9 @@ function Write() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log("Title:", title);
-    console.log("Content:", content);
-    console.log("Image:", image);
-    console.log("Category:", category);
+    if (isUpdate) {
+      console.log("Update blog");
+    }
   };
 
   return (

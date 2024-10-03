@@ -28,7 +28,7 @@ export const allBlogs = async (req, res, next) => {
 // create a new blogs
 export const createBlog = async (req, res, next) => {
   const { userId } = req.userId;
-  const { title, body, category } = req.body;
+  const { title, body, category, imageUrl } = req.body;
 
   if (!title || !body || !category) {
     return next(errorHandler(400, "All fields are required"));
@@ -40,13 +40,14 @@ export const createBlog = async (req, res, next) => {
       body,
       category,
       user: userId,
+      imageUrl,
     });
 
     await newBlog.save();
 
     if (!newBlog) return next(errorHandler(400, "Blog not created"));
 
-    res.status(201).json(newBlog);
+    res.status(201).json({ message: "Blog created successfully", newBlog });
   } catch (error) {
     return next(errorHandler(500, error.message));
   }
