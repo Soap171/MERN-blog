@@ -5,7 +5,7 @@ import BlogList from "../components/BlogList";
 import { AiOutlineDelete } from "react-icons/ai";
 import { AiFillEdit } from "react-icons/ai";
 import { useParams } from "react-router-dom";
-import { fetchBlog, fetchUser, writeComment } from "../api/api";
+import { fetchBlog, fetchUser, writeComment, deleteComment } from "../api/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Loader from "../utils/Loader";
 import { useAuthStore } from "../store/authStore";
@@ -27,6 +27,13 @@ function Blog() {
 
   const mutation = useMutation({
     mutationFn: (newComment) => writeComment(id, newComment),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["blog", id]);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (commentId) => deleteComment(commentId),
     onSuccess: () => {
       queryClient.invalidateQueries(["blog", id]);
     },
@@ -77,7 +84,13 @@ function Blog() {
         <div className="comments-section mt-4">
           <h6>Comments:</h6>
           {blog.comments.map((comment) => (
-            <Comment key={comment._id} comment={comment} />
+            <Comment
+              key={comment._id}
+              comment={comment}
+              loggedInUserId={user?._id}
+              queryClient={queryClient}
+              deleteMutation={deleteMutation}
+            />
           ))}
         </div>
       )}
@@ -104,7 +117,7 @@ function Blog() {
   );
 }
 
-function Comment({ comment }) {
+function Comment({ comment, loggedInUserId, queryClient, deleteMutation }) {
   const {
     data: user,
     isLoading,
@@ -123,6 +136,14 @@ function Comment({ comment }) {
     return <p>Error loading user</p>;
   }
 
+  const handleDelete = () => {
+    deleteMutation.mutate(comment._id);
+  };
+
+  console.log(comment._id, "comment._id");
+  console.log(comment.user, "comment.user");
+  console.log(user._id, "user._id");
+
   return (
     <div className="comment d-flex align-items-start mb-3">
       <img
@@ -135,6 +156,15 @@ function Comment({ comment }) {
       <div>
         <p className="mb-1">
           <strong>{user.name}</strong>: {comment.comment}
+          {comment.user === loggedInUserId ? (
+            <AiOutlineDelete
+              size={20}
+              className="icon-hover m-2"
+              onClick={handleDelete}
+            />
+          ) : (
+            ""
+          )}
         </p>
       </div>
     </div>

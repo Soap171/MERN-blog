@@ -168,7 +168,29 @@ export const createComment = async (req, res, next) => {
   }
 };
 
-export const deleteComment = async (req, res, next) => {};
+export const deleteComment = async (req, res, next) => {
+  const userId = req.userId;
+  const { id } = req.params;
+  console.log(id, "this is the comment id");
+  console.log(userId, "this is the user id");
+
+  try {
+    const comment = await Comment.findById(id);
+    console.log(comment.user._id.toString(), "this is the user of the comment");
+    if (!comment) return next(errorHandler(404, "Comment not found"));
+
+    if (comment.user._id.toString() !== userId) {
+      return next(
+        errorHandler(403, "You are not authorized to delete this comment")
+      );
+    }
+    const deletedComment = await Comment.findByIdAndDelete(id);
+    return res.status(200).json({ message: "Comment deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    next(errorHandler(500, error.message));
+  }
+};
 
 // get user by user id for comments and blogs
 export const getUser = async (req, res, next) => {

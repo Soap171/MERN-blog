@@ -7,6 +7,7 @@ import {
   createComment,
   getBlog,
   getUser,
+  deleteComment,
 } from "../controllers/blogs.Controller.js";
 import { verifyToken } from "../utils/verifyToken.js";
 
@@ -21,6 +22,7 @@ router.delete("/:id", verifyToken, deleteBlog);
 router.patch("/:id", verifyToken, updateBlog);
 
 // POST Comments routes
-router.post("/:id", verifyToken, createComment);
+router.post("/comment/:id", verifyToken, createComment);
+router.delete("/comment/:id", verifyToken, deleteComment);
 
 export default router;

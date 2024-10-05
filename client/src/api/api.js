@@ -61,13 +61,27 @@ export const fetchUser = async (id) => {
 export const writeComment = async (id, commentData) => {
   console.log(commentData);
   try {
-    const response = await axios.post(`${API_URL_BLOG}/api/blogs/${id}`, {
-      comment: commentData,
-    });
+    const response = await axios.post(
+      `${API_URL_BLOG}/api/blogs/comment/${id}`,
+      {
+        comment: commentData,
+      }
+    );
 
     return response.data;
   } catch (error) {
     throw error;
-    console.log(error);
+  }
+};
+
+// delete a commnent
+export const deleteComment = async (id) => {
+  try {
+    const response = await axios.delete(
+      `${API_URL_BLOG}/api/blogs/comment/${id}`
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
   }
 };
