@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { uploadBlogImage, deleteBlogImage } from "../services/firebase";
-import { writeBlog } from "../api/profile.api";
+import { writeBlog } from "../api/api";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 function Write() {

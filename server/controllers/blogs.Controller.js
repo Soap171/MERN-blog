@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import Blog from "../models/blog.js";
 import Comment from "../models/comments.js";
 import { errorHandler } from "../utils/error.js";
+import User from "../models/user.js";
 
 // view all blogs
 export const allBlogs = async (req, res, next) => {
@@ -41,7 +42,9 @@ export const getBlog = async (req, res, next) => {
 };
 // create a new blogs
 export const createBlog = async (req, res, next) => {
-  const { userId } = req.userId;
+  const userId = req.userId;
+  console.log(req.userId);
+
   const { title, body, category, imageUrl } = req.body;
 
   if (!title || !body || !category) {
@@ -58,11 +61,13 @@ export const createBlog = async (req, res, next) => {
     });
 
     await newBlog.save();
+    console.log(newBlog);
 
     if (!newBlog) return next(errorHandler(400, "Blog not created"));
 
     res.status(201).json({ message: "Blog created successfully", newBlog });
   } catch (error) {
+    console.log(error);
     return next(errorHandler(500, error.message));
   }
 };
@@ -129,21 +134,21 @@ export const updateBlog = async (req, res, next) => {
 // create a comment for a blog
 export const createComment = async (req, res, next) => {
   const userId = req.userId;
-  const { commentData } = req.body;
+  const { comment } = req.body;
   const { id } = req.params;
-  console.log(userId);
-  console.log(id);
-  console.log(commentData);
+  console.log(userId, "this is the user id");
+  console.log(id, "this is the blog id");
+  console.log(comment, "this is the comment");
 
   if (!id || !userId) {
     return next(errorHandler(404, "Blog ID or user ID not found"));
   }
 
-  if (!commentData) return next(errorHandler(400, "Comment is required"));
+  if (!comment) return next(errorHandler(400, "Comment is required"));
 
   try {
     const newComment = new Comment({
-      comment: commentData,
+      comment: comment,
       user: userId,
       blog: id,
     });
@@ -156,8 +161,25 @@ export const createComment = async (req, res, next) => {
 
     if (!newComment) return next(errorHandler(400, "Comment not created"));
 
-    res.status(201).json(newComment);
+    res.status(201).json({ success: true });
   } catch (error) {
-    return next(errorHandler(500, error.message));
+    //return next(errorHandler(500, error.message));
+    console.log(error);
+  }
+};
+
+export const deleteComment = async (req, res, next) => {};
+
+// get user by user id for comments and blogs
+export const getUser = async (req, res, next) => {
+  const { id } = req.params;
+  if (!id) return next(errorHandler(400, "User ID is required"));
+
+  try {
+    const user = await User.findById(id);
+    if (!user) return next(errorHandler(404, "User not found"));
+    return res.status(200).json(user);
+  } catch (error) {
+    next(errorHandler(500, error.message));
   }
 };

@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { AiFillEdit } from "react-icons/ai";
 import { AiOutlineDelete } from "react-icons/ai";
 import { useNavigate, useLocation } from "react-router-dom";
-import { fetchBlogs } from "../api/profile.api";
+import { fetchBlogs } from "../api/api";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import Loader from "../utils/Loader";
 import "./style.css";
@@ -22,7 +22,7 @@ function BlogList({ excludeBlogId }) {
     queryKey: ["blogs", category],
     queryFn: () => fetchBlogs(category),
   });
-  console.log(blogs);
+
   const [currentPage, setCurrentPage] = useState(1);
   const blogsPerPage = 3;
   const navigate = useNavigate();
@@ -71,15 +71,16 @@ function BlogList({ excludeBlogId }) {
               className="card h-100"
               onClick={() => handleCardClick(blog._id)}
             >
-              <img src={blog.image} className="card-img-top" alt={blog.title} />
+              <img
+                src={blog.imageUrl}
+                className="card-img-top"
+                alt={blog.title}
+              />
               <div className="card-body">
                 <h5 className="card-title">{blog.title}</h5>
                 <p className="card-text">{blog.body}</p>
                 <p className="card-text">{blog.category}</p>
-              </div>
-              <div className="p-2">
-                <AiFillEdit size={20} className="icon-hover" />{" "}
-                <AiOutlineDelete size={20} className="icon-hover" />
+                <p className="card-text">{blog.createdAt}</p>
               </div>
             </div>
           </div>

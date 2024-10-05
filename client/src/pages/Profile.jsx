@@ -4,7 +4,7 @@ import "../components/style.css";
 import BlogList from "../components/BlogList";
 import { useAuthStore } from "../store/authStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateProfile } from "../api/profile.api";
+import { updateProfile } from "../api/api";
 import { deleteImage, uploadImage } from "../services/firebase";
 import toast from "react-hot-toast";
 

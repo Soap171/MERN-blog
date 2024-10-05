@@ -1,7 +1,9 @@
 import axios from "axios";
 import { API_URL } from "../store/authStore";
 
-const API_URL_BLOG = "http://localhost:8000";
+const API_URL_BLOG = "http://localhost:8000"; // blog based operations
+
+// update user profile
 export const updateProfile = async (data) => {
   try {
     const response = await axios.patch(`${API_URL}/update`, data);
@@ -11,6 +13,7 @@ export const updateProfile = async (data) => {
   }
 };
 
+//write a blog
 export const writeBlog = async (title, body, category, imageUrl) => {
   try {
     const response = await axios.post(`${API_URL_BLOG}/api/blogs`, {
@@ -26,6 +29,7 @@ export const writeBlog = async (title, body, category, imageUrl) => {
   }
 };
 
+// fetch all blogs
 export const fetchBlogs = async (category) => {
   const response = await axios.get(`${API_URL_BLOG}/api/blogs`, {
     params: category ? { category } : {},
@@ -33,11 +37,37 @@ export const fetchBlogs = async (category) => {
   return response.data;
 };
 
+// fetch a single blog
 export const fetchBlog = async (id) => {
   try {
     const response = await axios.get(`${API_URL_BLOG}/api/blogs/${id}`);
     return response.data;
   } catch (error) {
     throw error;
+  }
+};
+
+// fetch user by use id
+export const fetchUser = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL_BLOG}/api/blogs/user/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+//write a comment
+export const writeComment = async (id, commentData) => {
+  console.log(commentData);
+  try {
+    const response = await axios.post(`${API_URL_BLOG}/api/blogs/${id}`, {
+      comment: commentData,
+    });
+
+    return response.data;
+  } catch (error) {
+    throw error;
+    console.log(error);
   }
 };
