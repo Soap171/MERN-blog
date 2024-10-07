@@ -58,7 +58,7 @@ function Blog() {
     <div className="container my-5 blog-container">
       <div className="row">
         <div className="col-12">
-          {blog.user === id && (
+          {blog.user === user._id && (
             <div className="d-flex justify-content-end mb-2">
               <AiFillEdit size={20} className="icon-hover me-2" />
               <AiOutlineDelete size={20} className="icon-hover" />

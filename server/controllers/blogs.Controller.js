@@ -42,12 +42,14 @@ export const getBlog = async (req, res, next) => {
 };
 // create a new blogs
 export const createBlog = async (req, res, next) => {
+  console.log("inside create blog controller");
   const userId = req.userId;
   console.log(req.userId);
 
   const { title, body, category, imageUrl } = req.body;
+  console.log(req.body, userId);
 
-  if (!title || !body || !category) {
+  if (!title || !body || !category || !imageUrl) {
     return next(errorHandler(400, "All fields are required"));
   }
 
@@ -63,7 +65,10 @@ export const createBlog = async (req, res, next) => {
     await newBlog.save();
     console.log(newBlog);
 
-    if (!newBlog) return next(errorHandler(400, "Blog not created"));
+    if (!newBlog) {
+      console.log("blog not created");
+      return next(errorHandler(400, "Blog not created"));
+    }
 
     res.status(201).json({ message: "Blog created successfully", newBlog });
   } catch (error) {

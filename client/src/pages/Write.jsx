@@ -2,27 +2,70 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { uploadBlogImage, deleteBlogImage } from "../services/firebase";
+import { uploadBlogImage } from "../services/firebase";
 import { writeBlog } from "../api/api";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 function Write() {
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [body, setBody] = useState("");
   const [image, setImage] = useState(null);
   const [category, setCategory] = useState("");
-  const [isUpdate, setIsUpdate] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const queryClient = useQueryClient();
 
-  const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+  const mutation = useMutation({
+    mutationFn: (newBlog) =>
+      writeBlog(
+        newBlog.title,
+        newBlog.body,
+        newBlog.category,
+        newBlog.imageUrl,
+        setIsLoading(true)
+      ),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries("blogs");
+      toast.success("Blog created successfully.");
+      setIsLoading(false);
+    },
+    onError: (error) => {
+      toast.error("An error occurred. Please try again.");
+      setIsLoading(false);
+    },
+  });
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+    if (file) {
+      try {
+        const url = await uploadBlogImage(file);
+        setImageUrl(url);
+      } catch (error) {
+        toast.error("Failed to upload image. Please try again.");
+      }
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (isUpdate) {
-      console.log("Update blog");
+    if (!title || !body || !category || !imageUrl) {
+      toast.error("All fields are required.");
+      return;
     }
+
+    const newBlog = {
+      title,
+      body,
+      category,
+      imageUrl,
+    };
+
+    mutation.mutate(newBlog);
   };
 
   return (
@@ -76,6 +119,7 @@ function Write() {
                 id="formImage"
                 onChange={handleImageChange}
                 accept="image/*"
+                required
               />
             </div>
 
@@ -84,15 +128,20 @@ function Write() {
                 Content
               </label>
               <ReactQuill
-                value={content}
-                onChange={setContent}
+                value={body}
+                onChange={setBody}
                 theme="snow"
                 placeholder="Write your blog content here..."
+                required
               />
             </div>
 
-            <button type="submit" className="btn btn-primary">
-              Publish
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={isLoading}
+            >
+              {isLoading ? "Publishing..." : "Submit"}
             </button>
           </form>
         </div>
