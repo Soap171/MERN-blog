@@ -66,7 +66,7 @@ function BlogList({ excludeBlogId }) {
   return (
     <div className="container my-5">
       <div className="row">
-        {currentBlogs.map((blog) => (
+        {currentBlogs?.map((blog) => (
           <div className="col-md-4 mb-4" key={blog._id}>
             <div
               className="card h-100"

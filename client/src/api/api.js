@@ -14,17 +14,16 @@ export const updateProfile = async (data) => {
 };
 
 //write a blog
-export const writeBlog = async (title, body, category, imageUrl) => {
+export const writeBlog = async (newBlog) => {
   try {
     const response = await axios.post(`${API_URL_BLOG}/api/blogs`, {
-      title,
-      body,
-      category,
-      imageUrl,
+      title: newBlog.title,
+      body: newBlog.body,
+      category: newBlog.category,
+      imageUrl: newBlog.imageUrl,
     });
 
     return response.data;
-    console.log(response.data);
   } catch (error) {
     console.log(error);
     throw error;

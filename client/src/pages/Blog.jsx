@@ -5,12 +5,20 @@ import BlogList from "../components/BlogList";
 import { AiOutlineDelete } from "react-icons/ai";
 import { AiFillEdit } from "react-icons/ai";
 import { useParams } from "react-router-dom";
-import { fetchBlog, fetchUser, writeComment, deleteComment } from "../api/api";
+import {
+  fetchBlog,
+  fetchUser,
+  writeComment,
+  deleteComment,
+  deleteBlog,
+} from "../api/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Loader from "../utils/Loader";
 import { useAuthStore } from "../store/authStore";
 import parse from "html-react-parser";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { deleteBlogImage } from "../services/firebase";
 
 function Blog() {
   const { id } = useParams();
@@ -42,6 +50,24 @@ function Blog() {
     },
   });
 
+  const deleteBlogMutation = useMutation({
+    mutationFn: async () => {
+      if (blog.imageUrl) {
+        await deleteBlogImage(blog.imageUrl);
+      }
+      return deleteBlog(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries("blogs");
+      queryClient.invalidateQueries(["blog", id]);
+      navigate("/");
+      toast.success("Blog deleted successfully.");
+    },
+    onError: (error) => {
+      toast.error("An error occurred. Please try again.");
+    },
+  });
+
   if (isLoading) {
     return <Loader />;
   }
@@ -61,6 +87,10 @@ function Blog() {
     navigate(`/write/${id}`);
   };
 
+  const handleDelete = () => {
+    deleteBlogMutation.mutate();
+  };
+
   return (
     <div className="container my-5 blog-container">
       <div className="row">
@@ -72,7 +102,11 @@ function Blog() {
                 className="icon-hover me-2"
                 onClick={handleEditClick}
               />
-              <AiOutlineDelete size={20} className="icon-hover" />
+              <AiOutlineDelete
+                size={20}
+                className="icon-hover"
+                onClick={handleDelete}
+              />
             </div>
           )}
           <h2 className="blog-title">{blog.title}</h2>

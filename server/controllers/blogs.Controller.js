@@ -47,7 +47,7 @@ export const createBlog = async (req, res, next) => {
   console.log(req.userId);
 
   const { title, body, category, imageUrl } = req.body;
-  console.log(req.body, userId);
+  console.log(req.body);
 
   if (!title || !body || !category || !imageUrl) {
     return next(errorHandler(400, "All fields are required"));
@@ -63,7 +63,6 @@ export const createBlog = async (req, res, next) => {
     });
 
     await newBlog.save();
-    console.log(newBlog);
 
     if (!newBlog) {
       console.log("blog not created");
@@ -73,14 +72,15 @@ export const createBlog = async (req, res, next) => {
     res.status(201).json({ message: "Blog created successfully", newBlog });
   } catch (error) {
     console.log(error);
-    return next(errorHandler(500, error.message));
+
+    //return next(errorHandler(500, error.message));
   }
 };
 
 // delete a blog
 export const deleteBlog = async (req, res, next) => {
   const { id } = req.params;
-  const { userId } = req.userId;
+  const userId = req.userId;
 
   if (!id) return next(errorHandler(400, "Blog ID is required"));
 
@@ -88,7 +88,7 @@ export const deleteBlog = async (req, res, next) => {
     const blog = await Blog.findById(id);
 
     if (!blog) return next(errorHandler(404, "Blog not found"));
-    if (blog.user !== userId) {
+    if (blog.user.toString() !== userId) {
       return next(
         errorHandler(403, "You are not authorized to delete this blog")
       );
