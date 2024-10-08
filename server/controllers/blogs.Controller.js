@@ -105,10 +105,10 @@ export const deleteBlog = async (req, res, next) => {
 };
 
 //update blog
-
 export const updateBlog = async (req, res, next) => {
   const { id } = req.params;
-  const { userId } = req.userId;
+  const userId = req.userId;
+  console.log(userId, "this is the user id");
 
   if (!id) return next(errorHandler(400, "Blog ID is required"));
 
@@ -116,7 +116,8 @@ export const updateBlog = async (req, res, next) => {
     const blog = await Blog.findById(id);
     if (!blog) return next(errorHandler(404, "Blog not found"));
 
-    if (blog.user !== userId) {
+    if (blog.user.toString() !== userId) {
+      console.log(blog.user, userId);
       return next(
         errorHandler(403, "You are not authorized to update this blog")
       );
@@ -127,11 +128,12 @@ export const updateBlog = async (req, res, next) => {
       { $set: req.body },
       { new: true, runValidators: true }
     );
-    if (!updateBlog)
+    if (!updatedBlog)
       return next(errorHandler(500, "Failed to update the blog"));
 
     res.status(200).json(updatedBlog);
   } catch (error) {
+    console.log(error);
     return next(errorHandler(500, error.message));
   }
 };

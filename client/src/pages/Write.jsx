@@ -1,40 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { uploadBlogImage } from "../services/firebase";
-import { writeBlog } from "../api/api";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { writeBlog, fetchBlog, updateBlog } from "../api/api";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { useParams, useNavigate } from "react-router-dom";
 
 function Write() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [image, setImage] = useState(null);
   const [category, setCategory] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const queryClient = useQueryClient();
 
+  const { data: blog, isLoading: isBlogLoading } = useQuery({
+    queryKey: ["blog", id],
+    queryFn: () => fetchBlog(id),
+    enabled: !!id,
+  });
+
+  useEffect(() => {
+    if (blog) {
+      setTitle(blog.title);
+      setBody(blog.body);
+      setCategory(blog.category);
+      setImageUrl(blog.imageUrl);
+    }
+  }, [blog]);
+
+  console.log(blog, "blog");
+
   const mutation = useMutation({
     mutationFn: (newBlog) =>
-      writeBlog(
-        newBlog.title,
-        newBlog.body,
-        newBlog.category,
-        newBlog.imageUrl,
-        setIsLoading(true)
-      ),
-
+      id ? updateBlog(id, newBlog) : writeBlog(newBlog),
     onSuccess: () => {
       queryClient.invalidateQueries("blogs");
-      toast.success("Blog created successfully.");
-      setIsLoading(false);
+      toast.success(
+        id ? "Blog updated successfully." : "Blog created successfully."
+      );
+      navigate("/");
     },
     onError: (error) => {
       toast.error("An error occurred. Please try again.");
-      setIsLoading(false);
     },
   });
 
@@ -44,6 +57,7 @@ function Write() {
     if (file) {
       try {
         const url = await uploadBlogImage(file);
+        console.log(url, "url of the image");
         setImageUrl(url);
       } catch (error) {
         toast.error("Failed to upload image. Please try again.");
@@ -68,11 +82,31 @@ function Write() {
     mutation.mutate(newBlog);
   };
 
+  const modules = {
+    toolbar: [
+      [{ header: "1" }, { header: "2" }, { font: [] }],
+      [{ size: [] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+      ["link", "image", "video"],
+      ["clean"],
+    ],
+  };
+
+  if (isBlogLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="container my-5">
       <div className="row justify-content-md-center">
         <div className="col-md-8">
-          <h2 className="mb-4">Write a Blog</h2>
+          <h2 className="mb-4">{id ? "Edit Blog" : "Write a Blog"}</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <label htmlFor="formTitle" className="form-label">
@@ -119,7 +153,6 @@ function Write() {
                 id="formImage"
                 onChange={handleImageChange}
                 accept="image/*"
-                required
               />
             </div>
 
@@ -132,6 +165,7 @@ function Write() {
                 onChange={setBody}
                 theme="snow"
                 placeholder="Write your blog content here..."
+                modules={modules}
                 required
               />
             </div>
@@ -139,9 +173,9 @@ function Write() {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={isLoading}
+              disabled={mutation.isLoading}
             >
-              {isLoading ? "Publishing..." : "Submit"}
+              {mutation.isLoading ? "Publishing..." : id ? "Update" : "Submit"}
             </button>
           </form>
         </div>

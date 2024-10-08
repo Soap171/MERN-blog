@@ -87,3 +87,17 @@ export const deleteComment = async (id) => {
     throw error;
   }
 };
+
+// update a blog
+export const updateBlog = async (id, newBlog) => {
+  try {
+    const response = await axios.put(
+      `${API_URL_BLOG}/api/blogs/${id}`,
+      newBlog
+    );
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

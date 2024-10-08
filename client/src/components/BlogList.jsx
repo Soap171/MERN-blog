@@ -7,6 +7,7 @@ import { fetchBlogs } from "../api/api";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import Loader from "../utils/Loader";
 import "./style.css";
+import parse from "html-react-parser";
 
 function BlogList({ excludeBlogId }) {
   const queryClient = useQueryClient();
@@ -78,7 +79,9 @@ function BlogList({ excludeBlogId }) {
               />
               <div className="card-body">
                 <h5 className="card-title">{blog.title}</h5>
-                <p className="card-text">{blog.body}</p>
+                <p className="card-text">
+                  {parse(blog.body.substring(0, 400))}
+                </p>
                 <p className="card-text">{blog.category}</p>
                 <p className="card-text">{blog.createdAt}</p>
               </div>

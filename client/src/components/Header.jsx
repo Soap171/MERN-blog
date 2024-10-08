@@ -42,7 +42,7 @@ function Header() {
             </li>
             {user && (
               <li className="nav-item">
-                <Link className="nav-link" to="/blog">
+                <Link className="nav-link" to="/write">
                   Write
                 </Link>
               </li>

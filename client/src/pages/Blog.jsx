@@ -9,12 +9,15 @@ import { fetchBlog, fetchUser, writeComment, deleteComment } from "../api/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Loader from "../utils/Loader";
 import { useAuthStore } from "../store/authStore";
+import parse from "html-react-parser";
+import { useNavigate } from "react-router-dom";
 
 function Blog() {
   const { id } = useParams();
   const { user } = useAuthStore();
   const [commentText, setCommentText] = useState("");
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const {
     data: blog,
@@ -54,13 +57,21 @@ function Blog() {
     setCommentText("");
   };
 
+  const handleEditClick = () => {
+    navigate(`/write/${id}`);
+  };
+
   return (
     <div className="container my-5 blog-container">
       <div className="row">
         <div className="col-12">
           {blog.user === user._id && (
             <div className="d-flex justify-content-end mb-2">
-              <AiFillEdit size={20} className="icon-hover me-2" />
+              <AiFillEdit
+                size={20}
+                className="icon-hover me-2"
+                onClick={handleEditClick}
+              />
               <AiOutlineDelete size={20} className="icon-hover" />
             </div>
           )}
@@ -76,7 +87,7 @@ function Blog() {
           />
         </div>
         <div className="col-12">
-          <p className="blog-content">{blog.body}</p>
+          <p className="blog-content">{parse(blog.body)}</p>
         </div>
       </div>
       {/* Display comments */}

@@ -19,7 +19,7 @@ router.get("/:id", getBlog);
 router.get("/user/:id", getUser);
 router.post("/", verifyToken, createBlog);
 router.delete("/:id", verifyToken, deleteBlog);
-router.patch("/:id", verifyToken, updateBlog);
+router.put("/:id", verifyToken, updateBlog);
 
 // POST Comments routes
 router.post("/comment/:id", verifyToken, createComment);
