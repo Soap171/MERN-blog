@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { uploadBlogImage } from "../services/firebase";
-import { writeBlog, fetchBlog, updateBlog } from "../api/api";
+import { uploadBlogImage, deleteBlogImage } from "../services/firebase";
+import { writeBlog, updateBlog, fetchBlog } from "../api/api";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { useParams, useNavigate } from "react-router-dom";
@@ -16,6 +16,7 @@ function Write() {
   const [image, setImage] = useState(null);
   const [category, setCategory] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [oldImageUrl, setOldImageUrl] = useState("");
 
   const queryClient = useQueryClient();
 
@@ -31,14 +32,22 @@ function Write() {
       setBody(blog.body);
       setCategory(blog.category);
       setImageUrl(blog.imageUrl);
+      setOldImageUrl(blog.imageUrl); // Store the old image URL
     }
   }, [blog]);
 
-  console.log(blog, "blog");
-
   const mutation = useMutation({
-    mutationFn: (newBlog) =>
-      id ? updateBlog(id, newBlog) : writeBlog(newBlog),
+    mutationFn: async (newBlog) => {
+      if (id) {
+        if (imageUrl !== oldImageUrl) {
+          // Delete the old image if a new image is uploaded
+          await deleteBlogImage(oldImageUrl);
+        }
+        return updateBlog(id, newBlog);
+      } else {
+        return writeBlog(newBlog);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries("blogs");
       toast.success(
@@ -147,6 +156,11 @@ function Write() {
               <label htmlFor="formImage" className="form-label">
                 Upload Image
               </label>
+              {imageUrl && (
+                <div className="mb-3">
+                  <img src={imageUrl} alt="Blog" className="img-fluid" />
+                </div>
+              )}
               <input
                 type="file"
                 className="form-control"

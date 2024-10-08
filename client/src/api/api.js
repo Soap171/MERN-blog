@@ -101,3 +101,13 @@ export const updateBlog = async (id, newBlog) => {
     throw error;
   }
 };
+
+// delete a blog
+export const deleteBlog = async (id) => {
+  try {
+    const response = await axios.delete(`${API_URL_BLOG}/api/blogs/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
