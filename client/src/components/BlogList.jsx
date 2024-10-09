@@ -1,19 +1,17 @@
-import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { AiFillEdit } from "react-icons/ai";
-import { AiOutlineDelete } from "react-icons/ai";
+import React, { useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { fetchBlogs } from "../api/api";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import Loader from "../utils/Loader";
 import "./style.css";
 import parse from "html-react-parser";
-
+import { format } from "date-fns";
 function BlogList({ excludeBlogId }) {
-  const queryClient = useQueryClient();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const category = queryParams.get("category");
+  const searchQuery = queryParams.get("search") || "";
+  const navigate = useNavigate();
 
   const {
     data: blogs,
@@ -25,27 +23,16 @@ function BlogList({ excludeBlogId }) {
   });
 
   const [currentPage, setCurrentPage] = useState(1);
-  const blogsPerPage = 3;
-  const navigate = useNavigate();
+  const blogsPerPage = 6;
 
-  if (isLoading) {
-    return <Loader />;
-  }
-  if (error) {
-    if (error.response.status === 404) {
-      return (
-        <div className="container my-5">
-          <div className="alert alert-warning" role="alert">
-            No blogs found for the selected category.
-          </div>
-        </div>
-      );
-    }
-
-    return <div>Error: {error.message}</div>;
-  }
-  // Filter out the blog with the same ID as excludeBlogId
-  const filteredBlogs = blogs.filter((blog) => blog._id !== excludeBlogId);
+  const filteredBlogs = useMemo(() => {
+    if (!blogs) return [];
+    return blogs.filter(
+      (blog) =>
+        blog._id !== excludeBlogId &&
+        blog.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [blogs, excludeBlogId, searchQuery]);
 
   // Calculate the blogs to be displayed on the current page
   const indexOfLastBlog = currentPage * blogsPerPage;
@@ -63,6 +50,38 @@ function BlogList({ excludeBlogId }) {
     navigate(`/blog/${id}`);
   };
 
+  const highlightText = (text, highlight) => {
+    if (!highlight) return text;
+    const parts = text.split(new RegExp(`(${highlight})`, "gi"));
+    return parts.map((part, index) =>
+      part.toLowerCase() === highlight.toLowerCase() ? (
+        <span key={index} className="highlight">
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    if (error.response.status === 404) {
+      return (
+        <div className="container my-5">
+          <div className="alert alert-warning" role="alert">
+            No blogs found.
+          </div>
+        </div>
+      );
+    }
+
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
     <div className="container my-5">
       <div className="row">
@@ -78,12 +97,16 @@ function BlogList({ excludeBlogId }) {
                 alt={blog.title}
               />
               <div className="card-body">
-                <h5 className="card-title">{blog.title}</h5>
+                <h5 className="card-title">
+                  {highlightText(blog.title, searchQuery)}
+                </h5>
                 <p className="card-text">
                   {parse(blog.body.substring(0, 400))}
                 </p>
                 <p className="card-text">{blog.category}</p>
-                <p className="card-text">{blog.createdAt}</p>
+                <p className="card-text">
+                  {format(new Date(blog.createdAt), "MMMM dd, yyyy")}
+                </p>
               </div>
             </div>
           </div>
@@ -96,7 +119,7 @@ function BlogList({ excludeBlogId }) {
               <li
                 key={index + 1}
                 className={`page-item ${
-                  currentPage === index + 1 ? "active" : ""
+                  index + 1 === currentPage ? "active" : ""
                 }`}
               >
                 <button

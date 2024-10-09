@@ -1,18 +1,32 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import LogoImg from "../images/Logo.png";
 import { useAuthStore } from "../store/authStore";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
 
-function Header() {
-  const { isLoading, error, logout, user } = useAuthStore();
+const Header = () => {
+  const { isLoading: isAuthLoading, error, logout, user } = useAuthStore();
   const userName = user ? capitalizeFirstLetter(user.name) : "";
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     try {
       await logout();
     } catch (error) {
       console.log(error.message);
+    }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setIsLoading(true);
+      setTimeout(() => {
+        navigate(`/?search=${searchQuery}`);
+        setIsLoading(false);
+      }, 1000); // Simulate a 2-second delay
     }
   };
 
@@ -47,7 +61,6 @@ function Header() {
                 </Link>
               </li>
             )}
-
             <li className="nav-item dropdown">
               <a
                 className="nav-link dropdown-toggle"
@@ -60,7 +73,7 @@ function Header() {
               </a>
               <ul className="dropdown-menu">
                 <li>
-                  <Link className="dropdown-item" to="category=Technology">
+                  <Link className="dropdown-item" to="?category=Technology">
                     Technology
                   </Link>
                 </li>
@@ -97,15 +110,22 @@ function Header() {
               </Link>
             </li>
           </ul>
-          <form className="d-flex" role="search">
+          <form className="d-flex" role="search" onSubmit={handleSearch}>
             <input
               className="form-control me-2"
               type="search"
               placeholder="Search"
               aria-label="Search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              disabled={isLoading}
             />
-            <button className="btn btn-outline-primary" type="submit">
-              Search
+            <button
+              className="btn btn-outline-primary"
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? "Searching..." : "Search"}
             </button>
           </form>
           {user == null ? (
@@ -149,6 +169,6 @@ function Header() {
       </div>
     </nav>
   );
-}
+};
 
 export default Header;

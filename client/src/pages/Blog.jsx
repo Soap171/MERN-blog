@@ -88,7 +88,12 @@ function Blog() {
   };
 
   const handleDelete = () => {
-    deleteBlogMutation.mutate();
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this blog?"
+    );
+    if (isConfirmed) {
+      deleteBlogMutation.mutate();
+    }
   };
 
   return (

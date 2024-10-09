@@ -32,10 +32,14 @@ export const writeBlog = async (newBlog) => {
 
 // fetch all blogs
 export const fetchBlogs = async (category) => {
-  const response = await axios.get(`${API_URL_BLOG}/api/blogs`, {
-    params: category ? { category } : {},
-  });
-  return response.data;
+  try {
+    const response = await axios.get(`${API_URL_BLOG}/api/blogs`, {
+      params: category ? { category } : {},
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 // fetch a single blog

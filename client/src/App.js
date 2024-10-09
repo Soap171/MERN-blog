@@ -20,6 +20,8 @@ import { useAuthStore } from "./store/authStore";
 import { useEffect, useState } from "react";
 import Loader from "./utils/Loader";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Contact from "./pages/Contact";
+import About from "./pages/About";
 
 function App() {
   const { isCheckingAuth, checkAuth, isAuthenticated, user } = useAuthStore();
@@ -59,7 +61,13 @@ function App() {
   // Redirect to home if user is authenticated and trying to access login, signup, or verify email pages
   const RedirectAuthenticatedUser = ({ children }) => {
     const location = useLocation();
-    const restrictedPaths = ["/login", "/signup", "/verify-email"];
+    const restrictedPaths = [
+      "/login",
+      "/signup",
+      "/verify-email",
+      "/forget-password",
+      "/reset-password/:token",
+    ];
 
     if (
       isAuthenticated &&
@@ -99,10 +107,38 @@ function App() {
               </RedirectAuthenticatedUser>
             }
           />
-          <Route path="/forget-password" element={<ForgetPassword />} />
-          <Route path="/reset-password/:token" element={<PasswordReset />} />
-          <Route path="/write/:id" element={<Write />} />
-          <Route path="/write/" element={<Write />} />
+          <Route
+            path="/forget-password"
+            element={
+              <RedirectAuthenticatedUser>
+                <ForgetPassword />
+              </RedirectAuthenticatedUser>
+            }
+          />
+          <Route
+            path="/reset-password/:token"
+            element={
+              <RedirectAuthenticatedUser>
+                <PasswordReset />
+              </RedirectAuthenticatedUser>
+            }
+          />
+          <Route
+            path="/write/:id"
+            element={
+              <ProtectedRoutes>
+                <Write />
+              </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/write/"
+            element={
+              <ProtectedRoutes>
+                <Write />
+              </ProtectedRoutes>
+            }
+          />
           <Route
             path="/profile"
             element={
@@ -119,6 +155,8 @@ function App() {
               </RedirectAuthenticatedUser>
             }
           />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
         </Routes>
         <Toaster />
       </QueryClientProvider>

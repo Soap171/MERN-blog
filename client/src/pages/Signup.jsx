@@ -4,7 +4,6 @@ import {
   MDBCol,
   MDBRow,
   MDBBtn,
-  MDBIcon,
   MDBInput,
   MDBValidation,
   MDBValidationItem,
@@ -14,6 +13,8 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import OAuth from "../components/OAuth";
+import { validateEmail } from "../utils/validateEmail";
+import toast from "react-hot-toast";
 
 function Signup() {
   const [name, setName] = useState("");
@@ -24,11 +25,26 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (name.length < 6) {
+      toast.error("Username must be at least 6 characters long.");
+    }
+
+    if (!validateEmail(email)) {
+      toast.error("Please provide a valid email address.");
+    }
+
+    if (password.length < 6 || password.length > 10) {
+      toast.error("Password must be between 6 and 10 characters long.");
+      return;
+    }
+
     try {
       await signUp(name, email, password);
       navigate("/verify-email");
     } catch (error) {
       console.error(error);
+      toast.error("An error occurred during signup. Please try again.");
     }
   };
 
@@ -42,8 +58,8 @@ function Signup() {
         <MDBCol col="4" md="6">
           <MDBValidation onSubmit={handleSubmit} noValidate>
             <MDBValidationItem
-              feedback="Please choose a username."
-              invalid
+              feedback="Username must be at least 6 characters long."
+              invalid={name.length < 6}
               className="mb-4"
             >
               <MDBInput
@@ -59,7 +75,7 @@ function Signup() {
 
             <MDBValidationItem
               feedback="Please provide a valid email address."
-              invalid
+              invalid={!validateEmail(email)}
               className="mb-4"
             >
               <MDBInput
@@ -74,8 +90,8 @@ function Signup() {
             </MDBValidationItem>
 
             <MDBValidationItem
-              feedback="Please provide a password."
-              invalid
+              feedback="Password must be between 6 and 10 characters long."
+              invalid={password.length < 6 || password.length > 10}
               className="mb-4"
             >
               <MDBInput
@@ -107,15 +123,6 @@ function Signup() {
           <div className="divider d-flex align-items-center my-4">
             <p className="text-center fw-bold mx-3 mb-0">OR</p>
           </div>
-
-          <MDBBtn
-            className="mb-4 w-100"
-            size="lg"
-            style={{ backgroundColor: "#3b5998" }}
-          >
-            <MDBIcon fab icon="facebook-f" className="mx-2" />
-            Continue with Facebook
-          </MDBBtn>
 
           <OAuth />
         </MDBCol>
