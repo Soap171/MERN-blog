@@ -105,7 +105,7 @@ function Signup() {
               />
             </MDBValidationItem>
 
-            <div className="d-flex justify-content-between mx-4 mb-4">
+            <div className="d-flex justify-content-between  mb-4">
               <Link to="/login">Already a member?</Link>
             </div>
 
@@ -119,10 +119,6 @@ function Signup() {
             </MDBBtn>
           </MDBValidation>
           {error && <p className="text-danger text-center">{error}</p>}
-
-          <div className="divider d-flex align-items-center my-4">
-            <p className="text-center fw-bold mx-3 mb-0">OR</p>
-          </div>
 
           <OAuth />
         </MDBCol>

@@ -151,23 +151,25 @@ function Blog() {
         </div>
       )}
       {/* Comment form */}
-      <div className="mt-4">
-        <h6>Write a Comment:</h6>
-        <form onSubmit={handleCommentSubmit}>
-          <div className="mb-3">
-            <textarea
-              className="form-control"
-              rows="3"
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Write your comment here..."
-            ></textarea>
-          </div>
-          <button type="submit" className="btn btn-primary">
-            Submit
-          </button>
-        </form>
-      </div>
+      {user && (
+        <div className="mt-4">
+          <h6>Write a Comment:</h6>
+          <form onSubmit={handleCommentSubmit}>
+            <div className="mb-3">
+              <textarea
+                className="form-control"
+                rows="3"
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder="Write your comment here..."
+              ></textarea>
+            </div>
+            <button type="submit" className="btn btn-primary">
+              Submit
+            </button>
+          </form>
+        </div>
+      )}
       <BlogList excludeBlogId={id} />
       {/* Delete Modal */}
       <DeleteModal
