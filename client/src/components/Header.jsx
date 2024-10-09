@@ -26,7 +26,7 @@ const Header = () => {
       setTimeout(() => {
         navigate(`/?search=${searchQuery}`);
         setIsLoading(false);
-      }, 1000); // Simulate a 2-second delay
+      }, 1000);
     }
   };
 

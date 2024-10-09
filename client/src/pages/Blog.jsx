@@ -19,11 +19,13 @@ import parse from "html-react-parser";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { deleteBlogImage } from "../services/firebase";
+import DeleteModal from "../components/DeleteModal";
 
 function Blog() {
   const { id } = useParams();
   const { user } = useAuthStore();
   const [commentText, setCommentText] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -88,19 +90,23 @@ function Blog() {
   };
 
   const handleDelete = () => {
-    const isConfirmed = window.confirm(
-      "Are you sure you want to delete this blog?"
-    );
-    if (isConfirmed) {
-      deleteBlogMutation.mutate();
-    }
+    setShowModal(true);
+  };
+
+  const confirmDelete = () => {
+    deleteBlogMutation.mutate();
+    setShowModal(false);
+  };
+
+  const cancelDelete = () => {
+    setShowModal(false);
   };
 
   return (
     <div className="container my-5 blog-container">
       <div className="row">
         <div className="col-12">
-          {blog.user === user._id && (
+          {user && blog.user === user._id && (
             <div className="d-flex justify-content-end mb-2">
               <AiFillEdit
                 size={20}
@@ -163,6 +169,12 @@ function Blog() {
         </form>
       </div>
       <BlogList excludeBlogId={id} />
+      {/* Delete Modal */}
+      <DeleteModal
+        show={showModal}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
     </div>
   );
 }
