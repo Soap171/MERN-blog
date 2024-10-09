@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import LogoImg from "../images/Logo.png";
 import { useAuthStore } from "../store/authStore";
 import { capitalizeFirstLetter } from "../utils/capitalizeFirstLetter";
+import toast from "react-hot-toast";
 
 const Header = () => {
   const { isLoading: isAuthLoading, error, logout, user } = useAuthStore();
@@ -21,6 +22,11 @@ const Header = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
+
+    if (searchQuery.trim() === "") {
+      toast.error("Please enter a search query.");
+      return;
+    }
     if (searchQuery.trim()) {
       setIsLoading(true);
       setTimeout(() => {
