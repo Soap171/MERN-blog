@@ -17,6 +17,7 @@ function Write() {
   const [category, setCategory] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [oldImageUrl, setOldImageUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -38,9 +39,11 @@ function Write() {
 
   const mutation = useMutation({
     mutationFn: async (newBlog) => {
+      setIsLoading(true);
       if (id) {
         if (imageUrl !== oldImageUrl) {
           // Delete the old image if a new image is uploaded
+
           await deleteBlogImage(oldImageUrl);
         }
         return updateBlog(id, newBlog);
@@ -53,6 +56,7 @@ function Write() {
       toast.success(
         id ? "Blog updated successfully." : "Blog created successfully."
       );
+      setIsLoading(false);
       navigate("/");
     },
     onError: (error) => {
@@ -65,9 +69,12 @@ function Write() {
     setImage(file);
     if (file) {
       try {
+        toast.loading("Uploading image...");
         const url = await uploadBlogImage(file);
         console.log(url, "url of the image");
         setImageUrl(url);
+        toast.dismiss();
+        toast.success("Image uploaded successfully.");
       } catch (error) {
         toast.error("Failed to upload image. Please try again.");
       }
@@ -189,7 +196,7 @@ function Write() {
               className="btn btn-primary"
               disabled={mutation.isLoading}
             >
-              {mutation.isLoading ? "Publishing..." : id ? "Update" : "Submit"}
+              {isLoading ? "Publishing..." : id ? "Update" : "Submit"}
             </button>
           </form>
         </div>
